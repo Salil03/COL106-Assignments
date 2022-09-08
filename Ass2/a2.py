@@ -1,69 +1,89 @@
-# Minimum Priority Queue Implementation using Min-Heap. Heap is stored in an array where left child = 2*i+1 and right child is 2*i+2
 # ______________________________________________________________________________________________
-
 class MinPriorityQueue:
-    def MinHeapify(self, idx):
-        if idx >= self.size:
-            raise Exception("Index out of Range")
+    '''Minimum Priority Queue Implementation using Min-Heap. 
+
+    Heap is stored in an array where left child = 2*i+1 and right child is 2*i+2. This convention is followed to allow 0-indexing'''
+
+    def min_heapify(self, idx):
+        '''send value at idx to correct position and maintain heap property'''
+        if idx >= self._size:
+            raise Exception("Index out of range of heap")
         left = 2*idx+1
         right = 2*idx + 2
         minimum = idx
-        if left < self.size and self.array[left] < self.array[minimum]:
+        if left < self._size and self._array[left] < self._array[minimum]:
             minimum = left
-        if right < self.size and self.array[right] < self.array[minimum]:
+        if right < self._size and self._array[right] < self._array[minimum]:
             minimum = right
         if minimum != idx:
-            self.array[minimum], self.array[idx] = self.array[idx], self.array[minimum]
-            MinHeapify(self, minimum)
+            self._array[minimum], self._array[idx] = self._array[idx], self._array[minimum]
+            min_heapify(self, minimum)
 
     def __init__(self, array):
-        self.size = len(array)
-        self.array = array
-        for i in range(self.size//2 - 1, -1, -1):
-            self.MinHeapify(i)
+        '''initialize the heap in O(n)
+
+        _size: size of the heap
+        _arraysize: size of the container array
+        _array: reference to container array
+        '''
+        self._arraysize = len(array)
+        self._size = len(array)
+        self._array = array
+        for i in range(self._size//2 - 1, -1, -1):
+            self.min_heapify(i)
 
     def top(self):
+        '''returns the minimum value in priority queue'''
         if self.is_empty():
             raise Exception("Top called on empty Priority Queue")
-        return self.array[0]
+        return self._array[0]
 
     def pop(self):
+        '''return the minimum value and removes it from priority queue'''
         if self.is_empty():
             raise Exception("Pop called on empty Priority Queue")
-        minimum = self.array[0]
-        self.array[0] = self.array[self.size-1]
-        self.array.pop()
-        self.size -= 1
-        if self.size > 0:
-            self.MinHeapify(0)
+        minimum = self._array[0]
+        self._array[0] = self._array[self._size-1]
+        self._size -= 1
+        if self._size > 0:
+            self.min_heapify(0)
         return minimum
 
     def decrease_value(self, idx, value):
-        if idx >= self.size:
+        '''decrease the key at position idx and set it to value'''
+        if idx >= self._size:
             raise Exception("Index out of Range")
-        self.array[idx] = value
-        while idx > 0 and self.array[(idx-1)//2] > self.array[idx]:
-            self.array[(
-                idx-1)//2], self.array[idx] = self.array[idx], self.array[(idx-1)//2]
+        self._array[idx] = value
+        while idx > 0 and self._array[(idx-1)//2] > self._array[idx]:
+            self._array[(
+                idx-1)//2], self._array[idx] = self._array[idx], self._array[(idx-1)//2]
             idx = (idx-1)//2
 
     def insert(self, value):
-        self.size += 1
-        self.array.append((float('inf'), -1, -1))
-        self.decrease_value(self.size-1, value)
+        '''insert new element in priority queue'''
+        self._size += 1
+        if self._arraysize >= self._size:
+            self._array[self._size-1] = (float('inf'), -1, -1,)
+        else:
+            self._array.append((float('inf'), -1, -1,))
+            self._arraysize += 1
+        self.decrease_value(self._size-1, value)
 
     def is_empty(self):
-        return (self.size == 0)
+        return (self._size == 0)
 
 # ______________________________________________________________________________________________
 
 
-'''
-listCollisions(M, x,v,m,T): Takes n points with mass M[i], initial position x[i], initial velocity v[i] and simulates m collisions or till time T
-'''
-
-
 def listCollisions(M, x, v, m, T):
+    '''Takes n points and simulates m collisions or till time T
+
+    M: a list of positive floats, where M[i] is the mass of the ith object,
+    x: a sorted list of floats, where x[i] is the initial position of the ith object,
+    v: a list of floats, where v[i] is the initial velocity of the ith object,
+    m: a non-negative integer,
+    T: a non-negative float,
+    '''
     n = len(M)
     collisions = []  # holds all future collisions
     # how many collisions involving ith ball have happened
@@ -89,12 +109,13 @@ def listCollisions(M, x, v, m, T):
         # discard old collisions which won't happen
         if coll1 < collision_cnt[idx] or coll2 < collision_cnt[idx+1]:
             continue
-        ans.append((time, idx, pos, ))
+
+        ans.append((float('%.4f' % (time)), idx, float('%.4f' % (pos)),))
 
         # update all parameters of idx and idx+1
         x[idx], x[idx+1] = pos, pos
         v[idx], v[idx+1] = (M[idx] - M[idx+1])/(M[idx] + M[idx+1]) * v[idx] + 2*M[idx+1] * v[idx+1]/(
-            M[idx]+M[idx+1]), 2*M[idx]*v[idx]/(M[idx] + M[idx+1]) - (M[idx] - M[idx+1])*v[idx+1]/(M[idx] + M[idx+1])  # calculate new velocities using formula
+            M[idx]+M[idx+1]), 2*M[idx]*v[idx]/(M[idx] + M[idx+1]) - (M[idx] - M[idx+1])*v[idx+1]/(M[idx] + M[idx+1])
         last_update[idx], last_update[idx+1] = time, time
         collision_cnt[idx] += 1
         collision_cnt[idx+1] += 1
@@ -115,5 +136,10 @@ def listCollisions(M, x, v, m, T):
     return ans
 
 
-print(listCollisions([10000.0, 1.0, 100.0], [
-      0.0, 1.0, 2.0], [0.0, 0.0, -1.0], 6, 10.0))
+# print(listCollisions([1.0, 5.0], [1.0, 2.0], [3.0, 5.0], 100, 100.0))
+# print(listCollisions([1.0, 1.0, 1.0, 1.0],
+#       [-2.0, -1.0, 1.0, 2.0], [0.0, -1.0, 1.0, 0.0], 5, 5.0))
+# print(listCollisions([10000.0, 1.0, 100.0], [
+#       0.0, 1.0, 2.0], [0.0, 0.0, -1.0], 6, 10.0))
+# print(listCollisions([10000.0, 1.0, 100.0], [
+#       0.0, 1.0, 2.0], [0.0, 0.0, -1.0], 100, 1.5))
