@@ -162,9 +162,9 @@ class PointDatabase:
         return idx
 
 
-# pointDbObject = PointDatabase([(1, 6), (2, 4), (3, 7), (4, 9), (5, 1), (6, 3), (7, 8), (8, 10),
-#                                (10, 5), (9, 2)])
-# pointDbObject.print_x(pointDbObject.root, 0)
+pointDbObject = PointDatabase([(1, 6), (2, 4), (3, 7), (4, 9), (5, 1), (6, 3), (7, 8), (8, 10),
+                               (10, 5), (9, 2)])
+pointDbObject.print_x(pointDbObject.root, 0)
 
 # print(pointDbObject.searchNearby((5, 5), 1))
 # print(pointDbObject.searchNearby((4, 8), 2))
