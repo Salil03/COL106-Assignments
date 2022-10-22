@@ -1,5 +1,5 @@
 class Node:
-    __slots__ = 'node', 'y_list', 'l', 'r'
+    __slots__ = "node", "y_list", "l", "r"
 
     def __init__(self, node, y_list, left, right):
         self.node = node
@@ -9,22 +9,26 @@ class Node:
 
 
 class PointDatabase:
-    __slots__ = 'root'
+    __slots__ = "root"
 
     def __init__(self, pointlist: list):
-        self.root = self.Construct_X(sorted(pointlist), 0, len(pointlist)-1)
+        self.root = self.Construct_X(sorted(pointlist), 0, len(pointlist) - 1)
 
     def Construct_X(self, ordered_set: list, low, high):
         if low > high:
             return None
         if low == high:
             return Node(ordered_set[low], [ordered_set[low]], None, None)
-        mid = (high + low)//2
-        left, right = self.Construct_X(
-            ordered_set, low, mid),  self.Construct_X(ordered_set, mid+1, high)
-        return Node(ordered_set[mid], self.MergeList_Y(left.y_list, right.y_list), left, right)
+        mid = (high + low) // 2
+        left, right = self.Construct_X(ordered_set, low, mid), self.Construct_X(
+            ordered_set, mid + 1, high
+        )
+        return Node(
+            ordered_set[mid], self.MergeList_Y(
+                left.y_list, right.y_list), left, right
+        )
 
-    def MergeList_Y(self, arr1: list, arr2: list):
+    def MergeList_Y(self, arr1: list, arr2: list) -> list[int]:
         merged = [0 for x in range(len(arr1) + len(arr2))]
         p1, p2, pmerge = 0, 0, 0
         while p1 < len(arr1) and p2 < len(arr2):
@@ -45,16 +49,19 @@ class PointDatabase:
             pmerge += 1
         return merged
 
-    def searchNearby(self, q, d):
+    def searchNearby(self, q, d) -> list[tuple[int, int]]:
         ans = []
-        return self.Query_X(q[0]-d, q[0]+d, q[1] - d, q[1]+d, ans)
+        return self.Query_X(q[0] - d, q[0] + d, q[1] - d, q[1] + d, ans)
 
-    def Query_X(self, x_low, x_high, y_low, y_high, ans):
+    def Query_X(self, x_low, x_high, y_low, y_high, ans: list[tuple[int, int]]) -> list[tuple[int, int]]:
         splitNode = self.FindSplit(x_low, x_high)
         if splitNode == None:
             return ans
         if splitNode.l == None:
-            if x_low <= splitNode.node[0] <= x_high and y_low <= splitNode.node[1] <= y_high:
+            if (
+                x_low <= splitNode.node[0] <= x_high
+                and y_low <= splitNode.node[1] <= y_high
+            ):
                 ans.append(splitNode.node)
             return ans
         currNode = splitNode.l
@@ -93,29 +100,29 @@ class PointDatabase:
             arr, y_low), self.UpperBound_Y(arr, y_high)
         if lower == -1 or upper == -1:
             return
-        ans.extend(arr[lower:upper+1])
+        ans.extend(arr[lower: upper + 1])
         return
 
-    def LowerBound_Y(self, arr: list, y_low):
-        idx, low, high = -1, 0, len(arr)-1
+    def LowerBound_Y(self, arr: list, y_low) -> int:
+        idx, low, high = -1, 0, len(arr) - 1
         while low <= high:
-            mid = (low + high)//2
+            mid = (low + high) // 2
             if arr[mid][1] >= y_low:
                 idx = mid
-                high = mid-1
+                high = mid - 1
             else:
-                low = mid+1
+                low = mid + 1
         return idx
 
-    def UpperBound_Y(self, arr: list, y_high):
-        idx, low, high = -1, 0, len(arr)-1
+    def UpperBound_Y(self, arr: list, y_high) -> int:
+        idx, low, high = -1, 0, len(arr) - 1
         while low <= high:
-            mid = (low+high)//2
+            mid = (low + high) // 2
             if arr[mid][1] <= y_high:
                 idx = mid
-                low = mid+1
+                low = mid + 1
             else:
-                high = mid-1
+                high = mid - 1
         return idx
 
 
