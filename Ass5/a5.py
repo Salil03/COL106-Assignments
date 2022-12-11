@@ -2,6 +2,7 @@ class MinPriorityQueue:
     '''Minimum Priority Queue Implementation using Min-Heap.
 
     Heap is stored in an array where left child = 2*i+1 and right child is 2*i+2. This convention is followed to allow 0-indexing'''
+    __slots__ = '_arraysize', '_size', '_array'
 
     def min_heapify(self, idx):
         '''send value at idx to correct position and maintain heap property'''
